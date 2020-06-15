@@ -1,13 +1,30 @@
 
-# Linear to Logistic regression
-![img](img/linear_vs_logistic_regression.jpg)
+# Logistic Regression
 
 ## Learning goals
 
 You will be able to:
-* Describe the need for logistic regression
-* Describe the mathematics behind logistic regression
+1. Describe the need for logistic regression
+2. Describe the mathematics behind logistic regression
 * Interpret the parameters of a logistic regression model
+
+## 1 Describe the need for logistic regression
+
+## Linear to Logistic regression
+![img](img/linear_vs_logistic_regression.jpg)
+
+For linear regression, we use a set of features to predict a **continuous** target variable.  We have a set of assumptions, primary amongst them a fundamentally linear relationship between independent and dependent variables.  Linear Regression optimized parameters using a cost function (OLS or gradient descent) which calculates the difference between predicted values and true values of a dataset.
+
+But what if, instead of predicting a continous outcome, we want to predict a binary outcome?  How do we translate the linear equation to output a binary prediction?  One idea would be to simply set a threshold where any prediction below a certain value is categorized as 0 and above is categorized as 1.
+
+What problems can we forsee in this approach?
+
+![talk amongst yourselves](https://media.giphy.com/media/3o6Zt44rlujPePNVVC/giphy.gif)
+
+
+
+
+
 
 ## What do we know about linear regression?
 
@@ -20,7 +37,7 @@ And how will logistic regression be different?
 
 ![log](https://media.giphy.com/media/m8DnDYfRwEtvG/giphy.gif)
 
-So far, we have used linear regression to predict continuous target variables: 
+Some continous target variables students have used linear regression in the past are: 
 
 1. carbon offset 
 2. NFL draft position 
