@@ -5,10 +5,11 @@
 
 You will be able to:
 1. Describe the need for logistic regression
-2. Describe the mathematics behind logistic regression
-* Interpret the parameters of a logistic regression model
+2. Explore how the sigmoid function "links" the linear equation to a probabilistic model
+3. Explain the connection of logodds to the linear model
+4. Differentiate between the new type of loss function and OLS
 
-## 1 Describe the need for logistic regression
+## 1. Describe the need for logistic regression
 
 ## Linear to Logistic regression
 ![img](img/linear_vs_logistic_regression.jpg)
@@ -24,7 +25,268 @@ What problems can we forsee in this approach?
 
 
 
+# 2. Explore how the sigmoid function "links" the linear equation to a probabilistic model
 
+The goal of logistic regression is to model a conditional probability.  For the binary case, it is the probability of a 0 or 1 based on a set of independent features X.
+
+$\Large P(G = 0|X = x)$  
+
+$\Large P(G = 1|X = x)$
+
+In order to realize such a goal, we have to somehow translate our linear output into a probability.  As we know, probability takes on a value between 0 and 1,  whereas the linear equation can output any value from $-\infty$ to $\infty$.
+
+In comes the sigmoid function to the rescue.
+
+$$ \displaystyle \frac{1}{1+e^{-z}}$$
+
+In your head, work through the approximate output of the function for:
+  - z = 0
+  - z = 1000
+  - z = -1000
+ 
+
+The sigmoid gives us an s-shaped output, shown below:
+
+![sigmoid](img/SigmoidFunction_701.gif)
+
+Notice how the curve crosses the y-axis at .5, and how the values are between 0 and 1.
+
+## 3. Explain the connection of logodds to the linear model
+
+Now for the fun part.  The input of the sigmoid is our trusty old linear equation.
+
+$$ \hat y = \hat\beta_0 + \hat\beta_1 x_1 + \hat\beta_2, x_2 +\ldots + \hat\beta_n x_n $$
+
+The linear equation is passed into the sigmoid function to produce a number between 0 and 1
+$$\displaystyle \frac{1}{1+e^{-(\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n)}}$$
+
+Remember, the goal of logistic regression is to model the conditional of a class using a transformation of the linear equation.
+
+In other words:
+
+$$\Large P(G = 1|X = x_1, x_2...x_n) = \frac{1}{1+e^{-(\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n)}}$$
+
+Remember, the goal of logistic regression is to model the conditional of a class using a transformation of the linear equation.
+
+In other words:
+
+$$\Large P(G = 1|X = x_1, x_2...x_n) = \frac{1}{1+e^{-(\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n)}}$$
+
+Now, with some arithmetic: 
+
+$$ \Large P(G = 1|X = x) = \displaystyle \frac{1}{1+e^{-(\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n))}}$$
+
+You can show that, by multiplying both numerator and denominator by $e^{(\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n)}$
+
+
+$$ \Large P(G = 1|X = x) = \displaystyle \frac{e^{\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n}}{1+e^{\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n}}$$
+
+As a result, you can compute:
+
+$$ \Large P(G = 0|X =x) = 1- \displaystyle \frac{e^{\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n}}{1+e^{\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n}}= \displaystyle \frac{1}{1+e^{\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n}}$$
+
+
+#### Odds ratio
+
+This doesn't seem to be very spectacular, but combining these two results leads to an easy interpretation of the model parameters, triggered by the *odds*, which equal p/(1-p):
+
+$$ \Large \dfrac{ P(G = 1|X = x) }{P(G = 0|X =x)} = e^{\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n} $$
+
+This expression can be interpreted as the *odds in favor of class 1*.    
+    
+
+Taking the log of both sides leads to:
+<br><br>
+    $\ln{\dfrac{ P(G = 1|X = x) }{P(G = 0|X =x)}} = \beta_0 + \beta_1*X_1 + \beta_2*X_2...\beta_n*X_n$
+    
+Here me can see why we call it logisitic regression.
+
+Our linear function calculates the log of the probability we predict 1, divided by the probability of predicting 0.  In other words, the linear equation is calculating the **log of the odds** that we predict a class of 1.
+    
+
+## Generalized Linear Model
+The strategy is to *generalize* the notion of linear regression; regression will become a special case. In particular, we'll keep the idea of the regression best-fit line, but now **we'll allow the model to be constructed from the dependent variable through some (non-trivial) function of the linear predictor**. 
+This function is standardly called the **link function**. 
+
+The equation from above: 
+$\large\ln\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1x_1 + ... + \beta_nx_n$
+<br>
+
+The characteristic link function is this logit function.
+
+# Decision Boundary
+![](img/decision_boundary_1.jpg)
+![](img/decision_boundary_2.jpg)
+
+## Pair Program: Created Income Data
+
+Let's manufacture some data created from a linear relationship between age and income, with some normally distributed noise.
+
+We could fit a linear regression model to this, but the line doesn't capture the shape of the data well.
+
+Logistic Regression is fit much the same way as linear regression:
+
+The trained object comes with a coef_ parameter which stores the $\beta$s and an intercept_ paramater. These parameters can be combined to create the linear equation.
+
+In pairs, 
+  1. create an array which is the result of computing the linear equation. That represents the log odds.
+  2. Pass those results into the sigmoid function defined above.
+  
+Along with the predict method, the regr object comes with the predict_proba() method, which outputs probabities associated with each class.
+
+  3. As a check, make sure that the output of the sigmoid function matches the probabilities output by  `regr.predict_proba(age)`
+
+
+```python
+regr.coef_
+regr.intercept_
+
+# store the coefficients
+coef = regr.coef_
+interc = regr.intercept_
+# create the linear predictor
+log_odds= (age * coef + interc)
+
+probs = [sigmoid(odd) for odd in log_odds]
+probs
+```
+
+
+
+
+    [array([0.00002236]),
+     array([0.97026438]),
+     array([0.06962443]),
+     array([0.99985897]),
+     array([0.99983159]),
+     array([0.00032357]),
+     array([0.0003676]),
+     array([0.99991816]),
+     array([0.99999953]),
+     array([0.99999288]),
+     array([0.00534339]),
+     array([0.37589488]),
+     array([0.99596064]),
+     array([0.99845536]),
+     array([0.0080285]),
+     array([0.81417651]),
+     array([0.39217428]),
+     array([0.00000006]),
+     array([0.99978685]),
+     array([0.99999429]),
+     array([0.00673598]),
+     array([0.96317144]),
+     array([0.00000049]),
+     array([0.00766249]),
+     array([0.99999892]),
+     array([0.98845648]),
+     array([0.01929754]),
+     array([0.9998738]),
+     array([0.00138955]),
+     array([0.84617412]),
+     array([0.99999108]),
+     array([0.06637792]),
+     array([0.9999189]),
+     array([0.00000463]),
+     array([0.99796085]),
+     array([0.99798223]),
+     array([0.00005494]),
+     array([0.99999858]),
+     array([0.07965762]),
+     array([0.99999763]),
+     array([0.00000029]),
+     array([0.00001762]),
+     array([0.00000019]),
+     array([0.99464703]),
+     array([0.92951589]),
+     array([0.63603166]),
+     array([0.00000017]),
+     array([0.81535501]),
+     array([0.00211962]),
+     array([0.39126059]),
+     array([0.00000162]),
+     array([0.95228335]),
+     array([0.83670346]),
+     array([0.00000005]),
+     array([0.96548991]),
+     array([0.99999784]),
+     array([0.99988105]),
+     array([0.99999985]),
+     array([0.99999954]),
+     array([0.99988656]),
+     array([0.00049103]),
+     array([0.97282165]),
+     array([0.22064719]),
+     array([0.00002564]),
+     array([0.01190353]),
+     array([0.00000024]),
+     array([0.10587276]),
+     array([0.99999978]),
+     array([0.00000241]),
+     array([0.00000207]),
+     array([0.99933996]),
+     array([0.9119718]),
+     array([0.18620209]),
+     array([0.00000138]),
+     array([0.00007747]),
+     array([0.99999677]),
+     array([0.03612978]),
+     array([0.65519552]),
+     array([0.00000005]),
+     array([0.00081525]),
+     array([0.0678634]),
+     array([0.9591806]),
+     array([0.99999823]),
+     array([0.97352721]),
+     array([0.99807408]),
+     array([0.00000566]),
+     array([0.99948514]),
+     array([0.99996868]),
+     array([0.97953076]),
+     array([0.07087774]),
+     array([0.00000619]),
+     array([0.84750359]),
+     array([0.59641196]),
+     array([0.99999941]),
+     array([0.23375548]),
+     array([0.38806785]),
+     array([0.66279917]),
+     array([0.99995378]),
+     array([0.00000027]),
+     array([0.99359841])]
+
+
+
+#### Interpretting coefficients
+
+This result, in combination with mathematical properties of exponential functions, leads to the fact that, applied to our example:
+
+if *age* goes up by 1, the odds are multiplied by $e^{\beta_1}$
+
+In our example, there is a positive relationship between age and income, this will lead a positive $\beta_1 > 0$, so $e^{\beta_1}>1$, and the odds will increase as *age* increases.
+
+# 4. Differentiate between the new type of loss function and OLS
+
+Ordinary least squares does not make sense with regards to odds and binary outcomes.  The odds of the true value, 1, equals 1/(1-1). Instead of OLS, we frame the discussion as likelihood.  What is the likelihood that we see the labels given the features and the hypothesis. 
+
+To maximize likelihood, we need to choose a probability distribution.  In this case, since the labels are binary, we use the Bernouli distribution. The likelihood equation for the Bernouli distribution is:
+
+$ Likelihood=\prod\limits_{i=0}^N p_i^{y_i}(1-p_i)^{1-y_i}$
+
+Taking the log of both sides leads to the log_likelihood equation:
+
+$loglikelihood = \sum\limits_{i=1}^N y_i\log{p_i} + (1-y_i)\log(1-p_i) $
+
+The goal of MLE is to maximize log-likelihood
+
+
+
+![Maximum Likelihood](img/MLE.png)
+
+
+There is no closed form solution like the normal equation in linear regression, so we have to use stocastic gradient descent.  To do so we take the derivative of the loglikelihood and set it to zero to find the gradient of the loglikelihood, then update our coefficients. Just like linear regression, we use a learning rate when updating them.
+
+Math behind the gradient of log-likelihood is ESL section 4.4.1: https://web.stanford.edu/~hastie/ElemStatLearn//.
 
 ## What do we know about linear regression?
 
