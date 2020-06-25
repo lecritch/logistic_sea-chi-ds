@@ -176,6 +176,20 @@ $$ \Large P(G = 0|X =x) = 1- \displaystyle \frac{e^{\hat \beta_o+\hat \beta_1 x_
 
 This doesn't seem to be very spectacular, but combining these two results leads to an easy interpretation of the model parameters, triggered by the *odds*, which equal p/(1-p):
 
+$$probability = \frac {one\ outcome} {all\ outcomes}$$
+
+$$odds = \frac {one\ outcome} {all\ other\ outcomes}$$
+
+Examples:
+
+- Dice roll of 1: probability = 1/6, odds = 1/5
+- Even dice roll: probability = 3/6, odds = 3/3 = 1
+- Dice roll less than 5: probability = 4/6, odds = 4/2 = 2
+
+$$odds = \frac {probability} {1 - probability}$$
+
+
+
 $$ \Large \dfrac{ P(G = 1|X = x) }{P(G = 0|X =x)} = e^{\hat \beta_o+\hat \beta_1 x_1 + \hat \beta_2 x_2...\hat\beta_n x_n} $$
 
 This expression can be interpreted as the *odds in favor of class 1*.  
