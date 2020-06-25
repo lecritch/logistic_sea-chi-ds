@@ -12,6 +12,8 @@
 7. Learn how to adjust the threshold of a logistic model
 8. Describe the assumptions of linear regression
 
+# Why logistic 1st of our classifiers?
+
 Logistic regression is a good model to usher us into the world of classification. It takes a concept we are familiar with, a linear equation, and translates it into a form fit for predicting a class.  
 
 It generally can't compete with the best supervised learning algorithms, but it is simple, fast, and interpretable.  
@@ -82,18 +84,20 @@ We could fit a linear regression model to this data
 
 ![talk amongst yourselves](https://media.giphy.com/media/3o6Zt44rlujPePNVVC/giphy.gif)
 
-If al=3, what class do we predict for household?
-
-If al=1.5, what class do we predict for household?
-
 We predict the 0 class for lower values of al, and the 1 class for higher values of al. What's our cutoff value? Around al=2, because that's where the linear regression line crosses the midpoint between predicting class 0 and class 1.
 
 Therefore, we'll say that if household_pred >= 0.5, we predict a class of 1, else we predict a class of 0.
 
+If al=3, what class do we predict for household?
+
+If al=1.5, what class do we predict for household?
+
+
+
 ## How about we use logistic logistic regression instead?
 
 
-Logistic regression performs a similar function as above:
+Which performs a similar threshold decision
 
 Not only do we have class predictions:
 
@@ -330,12 +334,16 @@ c_candidates
 
 ```python
 # Split your data into training and test data with a random state of 42 
-# and a test size of .3
+# and a test size of .25
 X = diabetes.drop('Outcome', axis=1)
 y = diabetes.Outcome
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, 
-                                                    test_size=.3)
+                                                    test_size=.25)
 ```
+
+Since we are still getting used to train test split, let's now just put aside the test set and not touch it again for this lesson.
+
+We will perform a second train test split on the train set, and hyperparameter tune our C on it.
 
 
 ```python
@@ -348,7 +356,7 @@ c_scores = {}
 for c in c_candidates:
     regr = LogisticRegression(penalty='l2', C=c, max_iter=10000)
     regr.fit(X_train, y_train)
-    accuracy = regr.score(X_test, y_test)
+    accuracy = regr.score(X_val, y_val)
     c_scores[c] = accuracy
     
 # the best accuracy score comes with the highest regularization
@@ -360,7 +368,7 @@ best_c
 
 
 
-    0.17
+    1.0
 
 
 
@@ -370,7 +378,7 @@ c_scores = {}
 for c in c_candidates:
     regr = LogisticRegression(penalty='l2', C=c, max_iter=10000)
     regr.fit(X_train, y_train)
-    accuracy = regr.score(X_test, y_test)
+    accuracy = regr.score(X_val, y_val)
     c_scores[c] = accuracy
     
 # the best accuracy score comes with the highest regularization
@@ -378,7 +386,7 @@ best_c = max(c_scores, key=c_scores.get)
 print(best_c, c_scores[best_c])
 ```
 
-    0.17 0.7359307359307359
+    1.4 0.7685185185185185
 
 
 We improved our test R^2 from .740 to .745. Not too much gain. 
@@ -414,7 +422,7 @@ Now, isolate one of the columns of predict_proba, and create an area of booleans
 
 Then, use the astype method to convert the array to integers: True will become 1, and False will become 0
 
-While the accuracy of the model will fall by increasing the threshold, we are protecting against a certain type of error. What type of error are we reducing? Of the metrics that we have learned, what score will increase? Why might protecting against such errors be smart in a model that deals with a life-threatening medical condition?
+While the accuracy of the model will fall by increasing the threshold, we are protecting against a certain type of error. What type of error are we reducing? Think back to Type 1 and Type 2 errors. Why might protecting against such errors be smart in a model that deals with a life-threatening medical condition?
 
 
 
@@ -422,17 +430,16 @@ While the accuracy of the model will fall by increasing the threshold, we are pr
 higher_threshold = probas[:,1] > .7
 y_hat_lower = higher_threshold.astype(int)
 
-"""By increasing the threshold, we are protecting against false negatives. Our recall score will increase. 
+"""By increasing the threshold, we are protecting against false negatives.
 In the case of heart disease, we should err on the side of caution.  We would rather have a false positive 
 mistake, since the individual would still be flagged for intervention. A false negative could result in death"""
 
-print(f"Recall score with default .5 threshold: {recall_score(y_hat, y_test)}")
-print(f"Recall score with default .4 threshold: {recall_score(y_hat_lower, y_test)}")
 ```
 
-    Recall score with default .5 threshold: 0.625
-    Recall score with default .4 threshold: 0.7555555555555555
 
+
+
+    'By increasing the threshold, we are protecting against false negatives.\nIn the case of heart disease, we should err on the side of caution.  We would rather have a false positive \nmistake, since the individual would still be flagged for intervention. A false negative could result in death'
 
 
 
